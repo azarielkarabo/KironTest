@@ -4,6 +4,7 @@ using KironTest.Services.Cache;
 using KironTest.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace KironTest.Repositories.BankHolidayRepositories
 {
@@ -13,6 +14,9 @@ namespace KironTest.Repositories.BankHolidayRepositories
         private readonly ILogger<BankHolidayRepository> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ICacheService _cacheService;
+
+        // SemaphoreSlim for thread-safe access
+        private static readonly SemaphoreSlim _holidayLock = new SemaphoreSlim(1, 1);
 
         public BankHolidayRepository(ApplicationDbContext context,
                                      ILogger<BankHolidayRepository> logger,
@@ -134,39 +138,48 @@ namespace KironTest.Repositories.BankHolidayRepositories
                 throw new Exception("Failed to deserialize bank holidays.");
             }
 
-            foreach (var region in bankHolidays.Regions)
+            // Use SemaphoreSlim to ensure thread-safe access
+            await _holidayLock.WaitAsync();
+            try
             {
-                var regionEntity = await GetRegionByNameAsync(region.Division)
-                    ?? new Region { Name = region.Division };
-
-                if (regionEntity.Id == 0)
+                foreach (var region in bankHolidays.Regions)
                 {
-                    await AddRegionAsync(regionEntity);
-                }
+                    var regionEntity = await GetRegionByNameAsync(region.Division)
+                        ?? new Region { Name = region.Division };
 
-                foreach (var holiday in region.Events)
-                {
-                    var date = DateTime.Parse(holiday.Date);
-                    var holidayEntity = await GetHolidayByTitleAndDateAsync(holiday.Title, date)
-                        ?? new Holiday
+                    if (regionEntity.Id == 0)
+                    {
+                        await AddRegionAsync(regionEntity);
+                    }
+
+                    foreach (var holiday in region.Events)
+                    {
+                        var date = DateTime.Parse(holiday.Date);
+                        var holidayEntity = await GetHolidayByTitleAndDateAsync(holiday.Title, date)
+                            ?? new Holiday
+                            {
+                                Title = holiday.Title,
+                                Date = date,
+                                Notes = holiday.Notes,
+                                Bunting = bool.Parse(holiday.Bunting)
+                            };
+
+                        if (holidayEntity.Id == 0)
                         {
-                            Title = holiday.Title,
-                            Date = date,
-                            Notes = holiday.Notes,
-                            Bunting = bool.Parse(holiday.Bunting)
-                        };
+                            await AddHolidayAsync(holidayEntity);
+                        }
+                        else
+                        {
+                            await UpdateHolidayAsync(holiday, holidayEntity);
+                        }
 
-                    if (holidayEntity.Id == 0)
-                    {
-                        await AddHolidayAsync(holidayEntity);
+                        await AddRegionHolidayAsync(regionEntity, holidayEntity);
                     }
-                    else
-                    {
-                        await UpdateHolidayAsync(holiday, holidayEntity);
-                    }
-
-                    await AddRegionHolidayAsync(regionEntity, holidayEntity);
                 }
+            }
+            finally
+            {
+                _holidayLock.Release();
             }
         }
 
