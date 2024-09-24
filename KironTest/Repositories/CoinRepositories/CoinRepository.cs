@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace KironTest.Repositories.CoinRepositories
 {
-    public class CoinRepository
+    public class CoinRepository : ICoinRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<CoinRepository> _logger;

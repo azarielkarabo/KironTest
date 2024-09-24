@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KironTest.Repositories.NavigationRepositories
 {
-    public class NavigationRepository
+    public class NavigationRepository : INavigationRepository
     {
         private readonly ApplicationDbContext _context;
 

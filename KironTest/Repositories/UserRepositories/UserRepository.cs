@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KironTest.Repositories.UserRepositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
 

@@ -8,9 +8,9 @@ namespace KironTest.Controllers
     [ApiController]
     public class NavigationController : ControllerBase
     {
-        private readonly NavigationRepository _navigationRepository;
+        private readonly INavigationRepository _navigationRepository;
 
-        public NavigationController(NavigationRepository navigationRepository)
+        public NavigationController(INavigationRepository navigationRepository)
         {
             _navigationRepository = navigationRepository;
         }

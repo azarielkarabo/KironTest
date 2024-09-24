@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace KironTest.Repositories.BankHolidayRepositories
 {
-    public class BankHolidayRepository
+    public class BankHolidayRepository : IBankHolidayRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<BankHolidayRepository> _logger;

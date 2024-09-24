@@ -6,12 +6,11 @@ namespace KironTest.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    [Authorize] 
     public class BankHolidaysController : ControllerBase
     {
-        private readonly BankHolidayRepository _bankHolidayRepository;
+        private readonly IBankHolidayRepository _bankHolidayRepository;
 
-        public BankHolidaysController(BankHolidayRepository bankHolidayRepository)
+        public BankHolidaysController(IBankHolidayRepository bankHolidayRepository)
         {
             _bankHolidayRepository = bankHolidayRepository;
         }
@@ -19,12 +18,6 @@ namespace KironTest.Controllers
         [HttpGet("fetch")]
         public async Task<IActionResult> FetchBankHolidays()
         {
-            // Check if the process is already completed
-            // if (await _bankHolidayRepository.HasBeenFetchedAsync())
-            // {
-            //     return BadRequest("The work for this endpoint has been fulfilled.");
-            // }
-
             await _bankHolidayRepository.FetchAndStoreBankHolidaysAsync();
             return Ok("Bank holidays fetched and stored.");
         }

@@ -39,10 +39,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<NavigationRepository>();
-builder.Services.AddScoped<BankHolidayRepository>();
-builder.Services.AddScoped<CoinRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<INavigationRepository, NavigationRepository>();
+builder.Services.AddScoped<IBankHolidayRepository, BankHolidayRepository>();
+builder.Services.AddScoped<ICoinRepository, CoinRepository>();
+
 
 builder.Services.AddHttpClient();
 builder.Services.AddCors(options =>

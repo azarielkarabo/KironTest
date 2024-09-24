@@ -6,9 +6,9 @@ namespace KironTest.Controllers
     [Route("api/[controller]")]
     public class CoinsController : ControllerBase
     {
-        private readonly CoinRepository _coinRepository;
+        private readonly ICoinRepository _coinRepository;
         
-        public CoinsController(CoinRepository coinRepository)
+        public CoinsController(ICoinRepository coinRepository)
         {
             _coinRepository = coinRepository;
         }

@@ -12,10 +12,10 @@ using KironTest.Repositories.UserRepositories;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly UserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
 
-    public AuthController(UserRepository userRepository, IConfiguration configuration)
+    public AuthController(IUserRepository userRepository, IConfiguration configuration)
     {
         _userRepository = userRepository;
         _configuration = configuration;
