@@ -10,7 +10,7 @@ namespace KironTest.Services.Database
         {
         }
 
-        public DbSet<Entities.User> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public DbSet<Navigation> Navigation { get; set; }
 
@@ -19,5 +19,7 @@ namespace KironTest.Services.Database
         public DbSet<Region> Regions { get; set; }
 
         public DbSet<RegionHoliday> RegionHolidays { get; set; }
+
+        public DbSet<Coin> Coins { get; set; }
     }
 }

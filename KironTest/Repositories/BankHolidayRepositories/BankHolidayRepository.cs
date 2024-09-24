@@ -52,6 +52,16 @@ namespace KironTest.Repositories.BankHolidayRepositories
             _cacheService.Remove("AllHolidays");
         }
 
+        private async Task UpdateHolidayAsync(HolidayModel holidayModel, Holiday holiday)
+        {
+            holiday.Title = holidayModel.Title;
+            holiday.Date = DateTime.Parse(holidayModel.Date);
+            holiday.Bunting = bool.Parse(holidayModel.Bunting);
+            holiday.Notes = holidayModel.Notes;
+            _context.Update(holiday);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<RegionHoliday?> GetRegionHolidayByIdAsync(int id)
         {
             return await _context.RegionHolidays.FindAsync(id);
@@ -149,6 +159,10 @@ namespace KironTest.Repositories.BankHolidayRepositories
                     if (holidayEntity.Id == 0)
                     {
                         await AddHolidayAsync(holidayEntity);
+                    }
+                    else
+                    {
+                        await UpdateHolidayAsync(holiday, holidayEntity);
                     }
 
                     await AddRegionHolidayAsync(regionEntity, holidayEntity);

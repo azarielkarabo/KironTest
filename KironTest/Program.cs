@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using KironTest.Repositories.NavigationRepositories;
 using KironTest.Repositories.UserRepositories;
 using KironTest.Repositories.BankHolidayRepositories;
+using KironTest.Repositories.CoinRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<NavigationRepository>();
 builder.Services.AddScoped<BankHolidayRepository>();
+builder.Services.AddScoped<CoinRepository>();
+
 builder.Services.AddHttpClient();
 builder.Services.AddCors(options =>
 {

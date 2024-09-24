@@ -1,4 +1,5 @@
-﻿using KironTest.Models;
+﻿using KironTest.Entities;
+using KironTest.Models;
 using KironTest.Services.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +32,7 @@ namespace KironTest.Repositories.NavigationRepositories
             return result;
         }
 
-        private NavigationModel BuildHierarchy(Entities.Navigation item, List<Entities.Navigation> allItems)
+        private NavigationModel BuildHierarchy(Navigation item, List<Navigation> allItems)
         {
             var node = new NavigationModel { Text = item.Text };
             foreach (var child in allItems.Where(c => c.ParentID == item.Id))
