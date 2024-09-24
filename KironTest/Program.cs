@@ -42,7 +42,16 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<NavigationRepository>();
 builder.Services.AddScoped<BankHolidayRepository>();
 builder.Services.AddHttpClient();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 // Configure JWT authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -64,6 +73,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
+app.UseCors("AllowAllOrigins");
 
 // Configure middleware
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())

@@ -1,10 +1,12 @@
-﻿using KironTest.Repositories.BankHolidayRepositories;
+﻿using Microsoft.AspNetCore.Authorization; 
 using Microsoft.AspNetCore.Mvc;
+using KironTest.Repositories.BankHolidayRepositories;
 
 namespace KironTest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/[controller]")]
+    [Authorize] 
     public class BankHolidaysController : ControllerBase
     {
         private readonly BankHolidayRepository _bankHolidayRepository;
@@ -17,11 +19,11 @@ namespace KironTest.Controllers
         [HttpGet("fetch")]
         public async Task<IActionResult> FetchBankHolidays()
         {
-            //// Check if the process is already completed
-            //if (await _BankHolidayRepository.HasBeenFetchedAsync())
-            //{
-            //    return BadRequest("The work for this endpoint has been fulfilled.");
-            //}
+            // Check if the process is already completed
+            // if (await _bankHolidayRepository.HasBeenFetchedAsync())
+            // {
+            //     return BadRequest("The work for this endpoint has been fulfilled.");
+            // }
 
             await _bankHolidayRepository.FetchAndStoreBankHolidaysAsync();
             return Ok("Bank holidays fetched and stored.");
@@ -41,5 +43,4 @@ namespace KironTest.Controllers
             return Ok(holidays);
         }
     }
-
 }

@@ -1,6 +1,6 @@
-@KironTest_HostAddress = http://localhost:5159
+@KironTest_HostAddress = http://localhost:7077
 
-GET {{KironTest_HostAddress}}/weatherforecast/
+GET {{KironTest_HostAddress}}/api/BankHolidays/fetch
+
 Accept: application/json
-
-###
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJhemFyaWVsLm1vY2h1c2kiLCJuYmYiOjE3MjcxNzgxODEsImV4cCI6MTcyNzE4MTc4MSwiaWF0IjoxNzI3MTc4MTgxfQ.BrYq6ubuaZntndfiwGSFslmmYL5N1tHy3W3S8K2BlyE

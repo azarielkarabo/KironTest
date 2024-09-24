@@ -28,28 +28,28 @@ namespace KironTest.Repositories.BankHolidayRepositories
         public async Task<Holiday?> GetHolidayByIdAsync(int id)
         {
             string cacheKey = $"Holiday_{id}";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Holidays.FindAsync(id));
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Holidays.FindAsync(id), TimeSpan.FromMinutes(30));
         }
 
         public async Task<Holiday?> GetHolidayByTitleAndDateAsync(string title, DateTime date)
         {
             string cacheKey = $"Holiday_{title}_{date:yyyyMMdd}";
             return await _cacheService.GetOrCreateAsync(cacheKey, async () =>
-                await _context.Holidays.FirstOrDefaultAsync(i => i.Title == title && i.Date == date));
+                await _context.Holidays.FirstOrDefaultAsync(i => i.Title == title && i.Date == date), TimeSpan.FromMinutes(30));
         }
 
         public async Task<IEnumerable<Holiday>> GetAllHolidaysAsync()
         {
             string cacheKey = "AllHolidays";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Holidays.ToListAsync());
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Holidays.ToListAsync(), TimeSpan.FromMinutes(30));
         }
 
         public async Task AddHolidayAsync(Holiday holiday)
         {
             _context.Holidays.Add(holiday);
             await _context.SaveChangesAsync();
-            _cacheService.Remove($"Holiday_{holiday.Id}"); 
-            _cacheService.Remove("AllHolidays"); 
+            _cacheService.Remove($"Holiday_{holiday.Id}");
+            _cacheService.Remove("AllHolidays");
         }
 
         public async Task<RegionHoliday?> GetRegionHolidayByIdAsync(int id)
@@ -79,19 +79,19 @@ namespace KironTest.Repositories.BankHolidayRepositories
         public async Task<Region?> GetRegionByIdAsync(int id)
         {
             string cacheKey = $"Region_{id}";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Regions.FindAsync(id));
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Regions.FindAsync(id), TimeSpan.FromMinutes(30));
         }
 
         public async Task<Region?> GetRegionByNameAsync(string name)
         {
             string cacheKey = $"Region_{name}";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Regions.FirstOrDefaultAsync(i => i.Name == name));
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Regions.FirstOrDefaultAsync(i => i.Name == name), TimeSpan.FromMinutes(30));
         }
 
         public async Task<IEnumerable<Region>> GetAllRegionsAsync()
         {
             string cacheKey = "AllRegions";
-            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Regions.ToListAsync());
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () => await _context.Regions.ToListAsync(), TimeSpan.FromMinutes(30));
         }
 
         public async Task AddRegionAsync(Region region)
@@ -99,7 +99,7 @@ namespace KironTest.Repositories.BankHolidayRepositories
             _context.Regions.Add(region);
             await _context.SaveChangesAsync();
             _cacheService.Remove($"Region_{region.Id}");
-            _cacheService.Remove("AllRegions"); 
+            _cacheService.Remove("AllRegions");
         }
 
         public async Task FetchAndStoreBankHolidaysAsync()
@@ -158,26 +158,30 @@ namespace KironTest.Repositories.BankHolidayRepositories
 
         public async Task<RegionModel> GetHolidaysByRegionAsync(string region)
         {
-            var regionEntity = await GetRegionByNameAsync(region)
-                ?? throw new Exception("Region not found");
-
-            var holidays = await _context.RegionHolidays
-                .Where(rh => rh.RegionId == regionEntity.Id)
-                .Include(rh => rh.Holiday)
-                .Select(rh => new HolidayModel
-                {
-                    Bunting = rh.Holiday.Bunting.ToString(),
-                    Date = rh.Holiday.Date.ToString("yyyy-MM-dd"),
-                    Notes = rh.Holiday.Notes,
-                    Title = rh.Holiday.Title
-                })
-                .ToListAsync();
-
-            return new RegionModel
+            string cacheKey = $"HolidaysByRegion_{region}";
+            return await _cacheService.GetOrCreateAsync(cacheKey, async () =>
             {
-                Division = region,
-                Events = holidays
-            };
+                var regionEntity = await GetRegionByNameAsync(region)
+                    ?? throw new Exception("Region not found");
+
+                var holidays = await _context.RegionHolidays
+                    .Where(rh => rh.RegionId == regionEntity.Id)
+                    .Include(rh => rh.Holiday)
+                    .Select(rh => new HolidayModel
+                    {
+                        Bunting = rh.Holiday.Bunting.ToString(),
+                        Date = rh.Holiday.Date.ToString("yyyy-MM-dd"),
+                        Notes = rh.Holiday.Notes,
+                        Title = rh.Holiday.Title
+                    })
+                    .ToListAsync();
+
+                return new RegionModel
+                {
+                    Division = region,
+                    Events = holidays
+                };
+            }, TimeSpan.FromMinutes(30));
         }
     }
 }
